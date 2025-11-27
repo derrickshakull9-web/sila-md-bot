@@ -4,7 +4,24 @@ const { default: makeWASocket, useMultiFileAuthState, Browsers, makeCacheableSig
 const fs = require("fs");
 const pino = require("pino");
 const { delay } = require("@whiskeysockets/baileys");
-const { removeFile, makeid } = require("./functions");
+
+// ====== FIX 1: removeFile & makeid added internally ======
+function removeFile(path) {
+    try {
+        fs.rmSync(path, { recursive: true, force: true });
+    } catch {}
+}
+
+function makeid() {
+    let length = 12;
+    let result = "";
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+// ==========================================================
 
 router.get('/', async (req, res) => {
     const id = makeid();
@@ -138,7 +155,7 @@ https://github.com/Kevintech-hub/Vinic-Xmd-
 
                     await delay(10);
                     await sock.ws.close();
-                    await removeFile('./temp/' + id);
+                    removeFile('./temp/' + id);
                     console.log(`💠 ${sock.user.id} has entered Vinic-Xmd...`);
                     await delay(10);
                     process.exit();
@@ -151,7 +168,7 @@ https://github.com/Kevintech-hub/Vinic-Xmd-
             });
         } catch (err) {
             console.log("⚠️ CYBERIA protocol crashed. Reinitializing...");
-            await removeFile('./temp/' + id);
+            removeFile('./temp/' + id);
             if (!res.headersSent) {
                 await res.send({ code: "❗ CyberNet Offline" });
             }
