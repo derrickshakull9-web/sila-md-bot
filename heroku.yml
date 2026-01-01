@@ -1,4 +1,4 @@
-build:
+build:sila
   buildpacks:
     - heroku/nodejs
 
